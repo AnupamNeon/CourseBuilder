@@ -1,14 +1,35 @@
-const ModuleItem = ({ item, onDelete }) => {
-  // Render different UI based on item type
+import { useDrag } from 'react-dnd';
 
-  const handleDelete = e => {
+const ModuleItem = ({ item, index, onDelete, onEdit, moveResource }) => {
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: 'RESOURCE',
+    item: { id: item.id, index, moduleId: item.moduleId },
+    collect: (monitor) => ({
+      isDragging: !!monitor.isDragging(),
+    }),
+  }));
+
+  const handleDelete = (e) => {
     e.stopPropagation();
     onDelete(item.id);
   };
 
+  const handleEdit = (e) => {
+    e.stopPropagation();
+    onEdit(item);
+  };
+
   if (item.type === 'link') {
     return (
-      <div className="module-item link-item">
+      <div
+        ref={drag}
+        className="module-item link-item"
+        style={{
+          opacity: isDragging ? 0.5 : 1,
+          cursor: 'move',
+          backgroundColor: isDragging ? '#f0f8ff' : 'white',
+        }}
+      >
         <div className="item-content">
           <div className="item-icon">
             <span className="icon-link">🔗</span>
@@ -20,21 +41,35 @@ const ModuleItem = ({ item, onDelete }) => {
               className="item-url"
               target="_blank"
               rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
             >
               {item.url}
             </a>
           </div>
         </div>
-        <button className="item-delete" onClick={handleDelete}>
-          <span className="delete-icon">🗑️</span>
-        </button>
+        <div className="item-actions">
+          <button className="item-edit" onClick={handleEdit}>
+            <span className="edit-icon">✏️</span>
+          </button>
+          <button className="item-delete" onClick={handleDelete}>
+            <span className="delete-icon">🗑️</span>
+          </button>
+        </div>
       </div>
     );
   }
 
   if (item.type === 'file') {
     return (
-      <div className="module-item file-item">
+      <div
+        ref={drag}
+        className="module-item file-item"
+        style={{
+          opacity: isDragging ? 0.5 : 1,
+          cursor: 'move',
+          backgroundColor: isDragging ? '#f0f8ff' : 'white',
+        }}
+      >
         <div className="item-content">
           <div className="item-icon">
             <span className="icon-file">📄</span>
@@ -46,14 +81,19 @@ const ModuleItem = ({ item, onDelete }) => {
             </p>
           </div>
         </div>
-        <button className="item-delete" onClick={handleDelete}>
-          <span className="delete-icon">🗑️</span>
-        </button>
+        <div className="item-actions">
+          <button className="item-edit" onClick={handleEdit}>
+            <span className="edit-icon">✏️</span>
+          </button>
+          <button className="item-delete" onClick={handleDelete}>
+            <span className="delete-icon">🗑️</span>
+          </button>
+        </div>
       </div>
     );
   }
 
-  return null; // Fallback for unknown item types
+  return null;
 };
 
 export default ModuleItem;

@@ -28,10 +28,12 @@ const Header = ({ onAddClick }) => {
   };
 
   const handleAddLink = () => {
+    onAddClick('link');
     setIsDropdownOpen(false);
   };
 
   const handleUpload = () => {
+    onAddClick('upload');
     setIsDropdownOpen(false);
   };
 

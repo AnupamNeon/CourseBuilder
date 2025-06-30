@@ -92,11 +92,6 @@ body {
   line-height: 14px;
 }
 
-.dropdown-arrow {
-  font-size: 10px;
-  margin-left: 4px;
-}
-
 .dropdown-menu {
   position: absolute;
   top: 100%;
@@ -131,12 +126,6 @@ body {
   background-color: #f5f5f5;
 }
 
-.item-icon {
-  width: 20px;
-  text-align: center;
-  color: #666;
-}
-
 /* Empty State Styles */
 .empty-state {
   display: flex;
@@ -145,10 +134,6 @@ body {
   justify-content: center;
   min-height: 400px;
   padding: 40px;
-}
-
-.empty-state-illustration {
-  margin-bottom: 24px;
 }
 
 .empty-state-image {
@@ -167,17 +152,28 @@ body {
   color: #666;
 }
 
-/* Module Card Styles */
+/* Module List Styles */
 .module-list {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
+/* Module Card Styles - Updated for DnD */
 .module-card-container {
   border-radius: 8px;
-  overflow: hidden;
+  transition: all 0.2s ease;
   margin-bottom: 12px;
+}
+
+.module-card-container.dragging {
+  opacity: 0.6;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.module-card-container.drop-target {
+  border: 2px dashed #0caeba;
+  background-color: #f0f8ff;
 }
 
 .module-card {
@@ -188,22 +184,27 @@ body {
   border: 1px solid #e1e1e1;
   border-radius: 8px;
   padding: 16px;
-  cursor: pointer;
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  cursor: move;
+  transition: all 0.2s ease;
 }
 
 .module-card:hover {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  border-color: #d8d8d8;
 }
 
 .module-content-expanded {
   background-color: #f9f9f9;
   border: 1px solid #e1e1e1;
   border-top: none;
-  border-bottom-left-radius: 8px;
-  border-bottom-right-radius: 8px;
+  border-radius: 0 0 8px 8px;
   padding: 20px;
+  transition: all 0.2s ease;
+}
+
+.module-content-expanded.drop-target {
+  background-color: #f0f8ff;
+  border: 2px dashed #0caeba;
+  border-top: none;
 }
 
 .empty-module-message {
@@ -214,7 +215,13 @@ body {
   padding: 40px 0;
 }
 
-.icon {
+.module-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.module-icon .icon {
   display: inline-block;
   transform: rotate(90deg);
   transition: transform 0.2s ease;
@@ -222,23 +229,8 @@ body {
   font-size: 12px;
 }
 
-.icon.expanded {
+.module-icon .icon.expanded {
   transform: rotate(0deg);
-}
-
-.module-content {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.module-icon {
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
 }
 
 .module-info {
@@ -270,7 +262,7 @@ body {
   color: #888;
   padding: 4px 8px;
   border-radius: 4px;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  transition: all 0.15s ease;
 }
 
 .btn-options:hover {
@@ -324,6 +316,171 @@ body {
   background-color: #fee8e8;
 }
 
+/* Module Items - Updated for DnD */
+.module-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 20px;
+  transition: background-color 0.2s ease;
+}
+
+.module-items-list.drop-target {
+  background-color: #f0f8ff;
+  border: 2px dashed #0caeba;
+  border-radius: 4px;
+}
+
+.module-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  border: 1px solid #eaeaea;
+  border-radius: 6px;
+  padding: 12px 16px;
+  transition: all 0.2s ease;
+  cursor: move;
+}
+
+.module-item.dragging {
+  opacity: 0.5;
+  background-color: #f0f8ff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.module-item:hover {
+  background-color: #fafafa;
+}
+
+.item-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.item-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-link, .icon-file {
+  font-size: 18px;
+  color: #0caeba;
+}
+
+.item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.item-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  margin: 0;
+}
+
+.item-url, .item-details {
+  font-size: 12px;
+  color: #666;
+  margin: 0;
+}
+
+.item-url {
+  text-decoration: none;
+  color: #0caeba;
+}
+
+.item-url:hover {
+  text-decoration: underline;
+}
+
+.item-delete {
+  background: none;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  padding: 4px;
+  font-size: 14px;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+  visibility: hidden;
+}
+
+.module-item:hover .item-delete {
+  visibility: visible;
+}
+
+.item-delete:hover {
+  background-color: #fee8e8;
+  color: #c53030;
+}
+
+/* Add Item Components */
+.add-item-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  margin-top: 16px;
+  z-index: 1;
+}
+
+.add-item-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: white;
+  border: 1px dashed #ccc;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 14px;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.add-item-button:hover {
+  background-color: #f5f5f5;
+  border-color: #aaa;
+  color: #333;
+}
+
+.add-item-menu {
+  position: relative;
+  top: 100%;
+  background: white;
+  border-radius: 8px;
+  width: 180px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  margin-top: 8px;
+  border: 1px solid #eaeaea;
+  animation: fadeIn 0.2s ease;
+}
+
+.add-item-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.15s ease;
+}
+
+.add-item-option:hover {
+  background-color: #f5f5f5;
+}
+
 /* Modal Styles */
 .modal-overlay {
   position: fixed;
@@ -348,14 +505,8 @@ body {
 }
 
 @keyframes modal-appear {
-  from { 
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to { 
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .modal-header {
@@ -418,10 +569,6 @@ body {
   box-shadow: 0 0 0 2px rgba(12, 174, 186, 0.1);
 }
 
-.form-input::placeholder {
-  color: #aaa;
-}
-
 .modal-footer {
   display: flex;
   justify-content: flex-end;
@@ -462,166 +609,7 @@ body {
   background: #09a0ab;
 }
 
-/* Module Item Styles */
-.module-items {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.module-items-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.module-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: white;
-  border: 1px solid #eaeaea;
-  border-radius: 6px;
-  padding: 12px 16px;
-  transition: background-color 0.15s ease;
-}
-
-.module-item:hover {
-  background-color: #fafafa;
-}
-
-.item-content {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.item-icon {
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.icon-link, .icon-file {
-  font-size: 16px;
-}
-
-.item-info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.item-title {
-  font-size: 14px;
-  font-weight: 500;
-  color: #333;
-  margin: 0;
-}
-
-.item-url, .item-details {
-  font-size: 12px;
-  color: #666;
-  margin: 0;
-}
-
-.item-url {
-  text-decoration: none;
-  color: #0caeba;
-}
-
-.item-url:hover {
-  text-decoration: underline;
-}
-
-.item-delete {
-  background: none;
-  border: none;
-  color: #999;
-  cursor: pointer;
-  padding: 4px;
-  font-size: 14px;
-  border-radius: 4px;
-  transition: background-color 0.15s ease, color 0.15s ease;
-}
-
-.item-delete:hover {
-  background-color: #fee8e8;
-  color: #c53030;
-}
-
-/* Empty module content */
-.empty-module-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  padding: 24px 0;
-}
-
-/* Add item button */
-.add-item-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-  margin-top: 16px;
-}
-
-.add-item-button {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background-color: white;
-  border: 1px dashed #ccc;
-  border-radius: 4px;
-  padding: 8px 16px;
-  font-size: 14px;
-  color: #666;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.add-item-button:hover {
-  background-color: #f5f5f5;
-  border-color: #aaa;
-  color: #333;
-}
-
-.add-item-menu {
-  position: absolute;
-  top: 100%;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  width: 180px;
-  z-index: 10;
-  margin-top: 8px;
-  overflow: hidden;
-  border: 1px solid #eaeaea;
-  animation: fadeIn 0.2s ease;
-}
-
-.add-item-option {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 16px;
-  width: 100%;
-  text-align: left;
-  border: none;
-  background: none;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.15s ease;
-}
-
-.add-item-option:hover {
-  background-color: #f5f5f5;
-}
-
+/* File Upload Styles */
 .file-input {
   display: block;
   width: 100%;
@@ -653,6 +641,44 @@ body {
 .file-size {
   color: #666;
   white-space: nowrap;
+}
+
+/* Add to your CSS file */
+.item-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.item-edit {
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  padding: 4px;
+  font-size: 14px;
+  border-radius: 4px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.item-edit:hover {
+  background-color: #f0f7ff;
+  color: #0caeba;
+}
+
+.module-item:hover .item-edit,
+.module-item:hover .item-delete {
+  visibility: visible;
+}
+
+.selected-file {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
 }
 
 /* Responsive adjustments */

@@ -1,22 +1,67 @@
 import { useState } from 'react';
-
+import { useDrag, useDrop } from 'react-dnd';
 import ModuleItem from './ModuleItem';
 
 const ModuleCard = ({
   module,
+  index,
+  items = [],
   onEdit,
   onDelete,
-  items = [],
   onAddItem,
   onDeleteItem,
+  moveModule,
+  moveResource,
+  dropResourceToModule,
 }) => {
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true); // Default expanded
   const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
+
+  // Module drag and drop
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: 'MODULE',
+    item: { id: module.id, index },
+    collect: (monitor) => ({
+      isDragging: !!monitor.isDragging(),
+    }),
+  }));
+
+  // Module drop target
+  const [{ isOver }, drop] = useDrop(() => ({
+    accept: 'MODULE',
+    hover: (draggedItem) => {
+      if (draggedItem.id !== module.id) {
+        moveModule(draggedItem.index, index);
+        draggedItem.index = index;
+      }
+    },
+    collect: (monitor) => ({
+      isOver: !!monitor.isOver(),
+    }),
+  }));
+
+  // Resource drop target
+  const [{ isOverResource }, dropResource] = useDrop(() => ({
+    accept: 'RESOURCE',
+    drop: (item) => {
+      if (item.moduleId !== module.id) {
+        dropResourceToModule(item, module.id);
+      }
+    },
+    hover: (draggedItem) => {
+      if (draggedItem.id !== module.id) {
+        // Handle resource reordering if needed
+      }
+    },
+    collect: (monitor) => ({
+      isOverResource: !!monitor.isOver(),
+    }),
+  }));
 
   const moduleItems = items.filter(item => item.moduleId === module.id);
 
-  const toggleOptions = e => {
+  const toggleOptions = (e) => {
     e.stopPropagation();
     setIsOptionsOpen(!isOptionsOpen);
   };
@@ -35,19 +80,32 @@ const ModuleCard = ({
     setIsOptionsOpen(false);
   };
 
-  const toggleAddMenu = e => {
+  const toggleAddMenu = (e) => {
     e.stopPropagation();
     setIsAddMenuOpen(!isAddMenuOpen);
   };
 
-  const handleAddClick = type => {
+  const handleAddClick = (type) => {
     onAddItem(module.id, type);
     setIsAddMenuOpen(false);
   };
 
   return (
-    <div className="module-card-container">
-      <div className="module-card" onClick={toggleExpanded}>
+    <div 
+      ref={drop}
+      style={{
+        opacity: isDragging ? 0.5 : 1,
+        border: isOver ? '2px dashed #0caeba' : '1px solid #e1e1e1',
+        backgroundColor: isOver ? '#f0f8ff' : 'white',
+      }}
+      className="module-card-container"
+    >
+      <div 
+        ref={drag}
+        className="module-card"
+        onClick={toggleExpanded}
+        style={{ cursor: 'move' }}
+      >
         <div className="module-content">
           <div className="module-icon">
             <span className={`icon ${isExpanded ? 'expanded' : ''}`}>▼</span>
@@ -79,8 +137,16 @@ const ModuleCard = ({
           )}
         </div>
       </div>
+
       {isExpanded && (
-        <div className="module-content-expanded">
+        <div 
+          ref={dropResource}
+          className="module-content-expanded"
+          style={{
+            backgroundColor: isOverResource ? '#f0f8ff' : '#f9f9f9',
+            border: isOverResource ? '2px dashed #0caeba' : '1px solid #e1e1e1',
+          }}
+        >
           {moduleItems.length === 0 ? (
             <div className="empty-module-content">
               <p className="empty-module-message">
@@ -113,11 +179,13 @@ const ModuleCard = ({
           ) : (
             <div className="module-items">
               <div className="module-items-list">
-                {moduleItems.map(item => (
+                {moduleItems.map((item, index) => (
                   <ModuleItem
                     key={item.id}
                     item={item}
+                    index={index}
                     onDelete={onDeleteItem}
+                    moveResource={moveResource}
                   />
                 ))}
               </div>
